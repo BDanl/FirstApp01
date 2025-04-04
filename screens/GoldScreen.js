@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Button } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native";
+import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const GoldScreen = () => {
     const navigation = useNavigation();
@@ -8,8 +9,10 @@ const GoldScreen = () => {
 
     return(
         <View style={styles.container}>
+            
             <Text style={styles.text}>GoldScreen</Text>
             <Button title="Go to Purple" onPress={() => navigation.navigate("PurpleScreen")}/>
+            <BottomNavigationBar/>
         </View>
     )
 }
