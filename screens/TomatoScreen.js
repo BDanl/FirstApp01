@@ -7,23 +7,59 @@ import Ready from "../components/Ready";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 import { TextInput } from "react-native-gesture-handler";
 import React from "react";
-import firestore from '@react-native-firebase/firestore';
+import { useEffect } from "react";
+import { collection, getDoc, getDocs, doc, setDoc, addDoc, updateDoc, deleteDoc  } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+ 
 
 const TomatoScreen = () => {
   const navigation = useNavigation();
   const [text, setText] = useState("");
 
-/*   const[dish, setDish] = useState("");
+  const[dish, setDish] = useState("");
+  const [dishes, setDishes] = useState([]);
+  const [titleInput, setTitleInput] = useState("");
+  const [priceInput, setPriceInput] = useState("");
 
   const getData = async () => {
-    const foodsCollection = await firestore().collection('foods').get();
-    console.log(foodsCollection.docs[0].data());
-    setDish(foodsCollection.docs[0].data());
+    const docRef= doc(db, "foods", "GVoFBYWAdUnLvHNgBoeW");
+    const docSnap = await getDoc(docRef);
+    /* console.log("Document data:", docSnap.data()); */
+  if (docSnap.exists()) {
+    setDish(docSnap.data());
+  } else {
+    /* console.log("No such document!"); */
+  }
+  };
+
+  const getAllData = async () => {
+    const queryFoods = await getDocs(collection(db, "foods"));
+    const dishesList = [];
+    queryFoods.forEach((doc) => {
+      dishesList.push(doc.data());
+    });
+    setDishes(dishesList);
+  };
+  
+  const addData = async () => {
+    await addDoc(collection(db, "foods"), {
+      title: titleInput,
+      price: parseInt(priceInput)
+     });
+     
   }
 
+  const choto = (title, price) => {
+    /* console.log(title);
+    setTitle(title);
+    console.log(price);
+    setPrice(price); */
+    
+  }
   useEffect(() => {
+    getAllData();
     getData();
-  }, []); */
+  }, []);
 
   return (
     <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent:"center" }}>
@@ -35,7 +71,7 @@ const TomatoScreen = () => {
       <AppLogoImage />
       <WelcomeText />
       <Ready /> 
-      <TextInput
+      {/* <TextInput
         style={{
           height: 40,
           width: "80%",
@@ -51,17 +87,42 @@ const TomatoScreen = () => {
             validacion: "Correcto Funcionamiento",
           })
         }
+      ></TextInput> */}
+      <TextInput
+        style={styles.textinput}
+        value={titleInput}
+        onChangeText={(text) => setTitleInput(text)}
+        placeholder="Ingrese el título"
       ></TextInput>
+
+      <TextInput
+        style={styles.textinput}
+        value={priceInput}
+        onChangeText={(text) => setPriceInput(text)}
+        placeholder="Ingrese el precio"
+        keyboardType="numeric"
+      ></TextInput>
+      <Button title="Add data" onPress={() => addData()}>
+
+      </Button>
       <Text
         style={styles.text}
         onPress={() => navigation.navigate("PurpleScreen" , {
             nombre: "Joche",
           })}
       >
-        {/* {dish.title} */}
-        {}
+        El precio de {dish.title} es de: {dish.price} $
       </Text>
       {/*  <Button title="Go to Gold" onPress={() => navigation.navigate("GoldenScreen")}/> */}
+
+      <Text>
+        {dishes.map((dish, index) => (
+          <Text key={index}>
+            {dish.title}
+            {dish.price}
+          </Text>
+        ))}
+      </Text>
         </View>
     </ScrollView>
     <BottomNavigationBar />
@@ -83,5 +144,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "black",
     marginTop: 10,
+    textAlign:"center"
+  },
+  textinput: {
+    height: 40,
+    width: "80%",
+    borderColor: "gray",
+    borderWidth: 1,
   },
 });
