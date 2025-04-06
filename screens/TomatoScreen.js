@@ -48,7 +48,36 @@ const TomatoScreen = () => {
      });
      
   }
+  const updateData = async () => {
+    await updateDoc(doc(db, "foods", "GVoFBYWAdUnLvHNgBoeW"), {
+      title: titleInput,
+      price: parseInt(priceInput)
+     });
+  }
 
+  const deleteData = async () => {
+    getAllData();
+    const title = titleInput; 
+    const querySnapshot = await db.collection("foods").where("title", "==", title).get();
+    const docRef = querySnapshot.docs[0];
+    if (docRef) {
+      await deleteDoc(doc(db, "foods", docRef.id)); o
+    } else {
+      console.log("No se encontró el documento");
+    }
+  };
+  const getId = async () => {
+  const db = firebase.firestore();
+  const collectionRef = db.collection("foods");
+
+  const querySnapshot = await collectionRef.getDocs();
+  querySnapshot.forEach((doc) => {
+  const datos = doc.data();
+  if (datos.title === titleInput) {
+    console.log(doc.id); // Imprime el ID del documento
+  }
+});
+  }
   const choto = (title, price) => {
     /* console.log(title);
     setTitle(title);
@@ -102,9 +131,10 @@ const TomatoScreen = () => {
         placeholder="Ingrese el precio"
         keyboardType="numeric"
       ></TextInput>
-      <Button title="Add data" onPress={() => addData()}>
-
-      </Button>
+      <Button title="Add data" onPress={() => addData()}/>
+      <Button title="Update data" onPress={() => updateData()}/>
+      <Button title="Delete data" onPress={() => deleteData()}/>
+      <Button title="Get ID" onPress={() => getId()}/>
       <Text
         style={styles.text}
         onPress={() => navigation.navigate("PurpleScreen" , {
@@ -116,10 +146,20 @@ const TomatoScreen = () => {
       {/*  <Button title="Go to Gold" onPress={() => navigation.navigate("GoldenScreen")}/> */}
 
       <Text>
+        Menu:
+        {'\n'}
         {dishes.map((dish, index) => (
           <Text key={index}>
-            {dish.title}
-            {dish.price}
+            {/* index===0 *//* dish.title.includes("Jopo") */ dish.price>1000 && (
+              <Text>
+                {dish.title + ": "}
+            
+                {dish.price + " "}
+                {'\n'}
+              </Text>
+
+            )}
+            
           </Text>
         ))}
       </Text>
