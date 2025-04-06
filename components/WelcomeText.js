@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 const WelcomeText = () => {
   return (
     <View>
-      <Text style={styles.title1}>Welcome to</Text>
+      <Text style={styles.title1}>Bienvenido a</Text>
       <Text style={styles.title2}>
         XHEALTH
       </Text>

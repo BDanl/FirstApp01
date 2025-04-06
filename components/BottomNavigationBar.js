@@ -30,7 +30,7 @@ const BottomNavigationBar = () => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.navBtn}>
-        <FontAwesome name="user" size={24} color="black" />
+        <FontAwesome name="user" size={24} color="black" onPress={()=> navigation.navigate("LoginScreen")}/>
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
     </View>

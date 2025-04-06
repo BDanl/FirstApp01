@@ -4,14 +4,22 @@ import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const GoldScreen = () => {
     const navigation = useNavigation();
-    const {name, params} = useRoute()
-    console.log(name, params)
+
 
     return(
         <View style={styles.container}>
             
             <Text style={styles.text}>GoldScreen</Text>
             <Button title="Go to Purple" onPress={() => navigation.navigate("PurpleScreen")}/>
+
+            <Text
+                    style={styles.text}
+                    onPress={() => navigation.navigate("PurpleScreen" , {
+                        namae: "Kikitaro",
+                      })}
+                  >
+                    Create your account here
+            </Text>
             <BottomNavigationBar/>
         </View>
     )

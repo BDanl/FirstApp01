@@ -2,16 +2,20 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TomatoScreen from "../screens/TomatoScreen";
 import GoldScreen from "../screens/GoldScreen";
 import PurpleScreen from "../screens/PurpleScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 
-const Stack = createStackNavigator();
+const AppStack = createStackNavigator();
 
 function MainStackNavigator() {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="TomatoScreen" component={TomatoScreen} />
-            <Stack.Screen name="GoldenScreen" component={GoldScreen} />
-            <Stack.Screen name="PurpleScreen" component={PurpleScreen} />
-        </Stack.Navigator>
+        <AppStack.Navigator screenOptions={{ headerShown: false }}>
+            <AppStack.Screen name="LoginScreen" component={LoginScreen} />
+            <AppStack.Screen name="RegisterScreen" component={RegisterScreen} />
+            <AppStack.Screen name="TomatoScreen" component={TomatoScreen} />
+            <AppStack.Screen name="GoldenScreen" component={GoldScreen} />
+            <AppStack.Screen name="PurpleScreen" component={PurpleScreen} />
+        </AppStack.Navigator>
     )
 }
 

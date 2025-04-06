@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from "react-native"
     return(
         <View>
             <Text style={styles.text}>
-                Prepare yourself to improve your life!
+                Preparate para mejorar tu vida!
             </Text>
         </View>
     );
