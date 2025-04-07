@@ -22,7 +22,7 @@ const TomatoScreen = () => {
   const [priceInput, setPriceInput] = useState("");
 
   const getData = async () => {
-    const docRef= doc(db, "foods", "GVoFBYWAdUnLvHNgBoeW");
+    const docRef= doc(db, "foods", "21qPfhokIUVF1ZuSxUdm");
     const docSnap = await getDoc(docRef);
     /* console.log("Document data:", docSnap.data()); */
   if (docSnap.exists()) {
@@ -49,7 +49,7 @@ const TomatoScreen = () => {
      
   }
   const updateData = async () => {
-    await updateDoc(doc(db, "foods", "GVoFBYWAdUnLvHNgBoeW"), {
+    await updateDoc(doc(db, "foods", "21qPfhokIUVF1ZuSxUdm"), {
       title: titleInput,
       price: parseInt(priceInput)
      });
