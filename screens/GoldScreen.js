@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button } from "react-native"
+import { View, Text, StyleSheet, Button, TextInput } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 
@@ -20,6 +20,24 @@ const GoldScreen = () => {
                   >
                     Create your account here
             </Text>
+
+            <TextInput
+                    style={{
+                      height: 40,
+                      width: "80%",
+                      borderColor: "gray",
+                      borderWidth: 1,
+                    }}
+                    placeholder="Username"
+                    value={text}
+                    onChangeText={setText}
+                    onSubmitEditing={() =>
+                      navigation.navigate("PurpleScreen", {
+                        nombre: text,
+                        validacion: "Correcto Funcionamiento",
+                      })
+                    }
+                  ></TextInput>
             <BottomNavigationBar/>
         </View>
     )

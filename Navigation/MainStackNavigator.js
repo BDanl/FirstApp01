@@ -4,6 +4,8 @@ import GoldScreen from "../screens/GoldScreen";
 import PurpleScreen from "../screens/PurpleScreen";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
+import WorkoutScreen from "../screens/WorkoutScreen";
+import ExploreScreen from "../screens/subscreens/ExploreScreen";
 
 const AppStack = createStackNavigator();
 
@@ -15,6 +17,9 @@ function MainStackNavigator() {
             <AppStack.Screen name="RegisterScreen" component={RegisterScreen} />
             <AppStack.Screen name="GoldenScreen" component={GoldScreen} />
             <AppStack.Screen name="PurpleScreen" component={PurpleScreen} />
+            <AppStack.Screen name="WorkoutScreen" component={WorkoutScreen} />
+            <AppStack.Screen name="ExploreScreen" component={ExploreScreen} />
+
         </AppStack.Navigator>
     )
 }

@@ -20,7 +20,7 @@ const BottomNavigationBar = () => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.navBtn}>
-        <AntDesign name="checksquare" size={24} color="black" onPress={()=> navigation.navigate("GoldenScreen")}/>
+        <AntDesign name="checksquare" size={24} color="black" onPress={()=> navigation.navigate("WorkoutScreen")}/>
         <Text style={styles.navText}>Follow Up</Text>
       </TouchableOpacity>
 

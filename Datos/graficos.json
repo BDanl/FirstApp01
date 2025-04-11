@@ -1,0 +1,11 @@
+{
+    "esquemas": [
+        {
+            "id": "1",
+            "name": "Charkit",
+            "icon": "https://www.npmjs.com/package/react-native-chart-kit",
+        },{
+            
+        }
+    ]
+}
