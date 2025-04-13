@@ -233,7 +233,7 @@ const TomatoScreen = () => {
             nombre: "Joche",
           })}
       >
-        El precio de {dish.title} es de: {dish.price} $
+        El precio de {dish.title} es then de: {dish.price} $
       </Text>
       {/*  <Button title="Go to Gold" onPress={() => navigation.navigate("GoldenScreen")}/> */}
 
