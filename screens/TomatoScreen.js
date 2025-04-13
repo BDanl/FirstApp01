@@ -1,5 +1,13 @@
 import { use, useState } from "react";
-import { View, Text, StyleSheet, Button, ScrollView, SafeAreaView, KeyboardAvoidingView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ScrollView,
+  SafeAreaView,
+  KeyboardAvoidingView,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AppLogoImage from "../components/AppLogoImage";
 import WelcomeText from "../components/WelcomeText";
@@ -8,25 +16,44 @@ import BottomNavigationBar from "../components/BottomNavigationBar";
 import { TextInput } from "react-native-gesture-handler";
 import React from "react";
 import { useEffect } from "react";
-import { collection, getDoc, getDocs, doc, setDoc, addDoc, updateDoc, deleteDoc,query, where, documentId, orderBy   } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  documentId,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { getFirestore } from 'firebase/firestore';
-import { firebase } from '../firebaseConfig';
-
-
- 
+import { getFirestore } from "firebase/firestore";
+import { firebase } from "../firebaseConfig";
 
 const TomatoScreen = () => {
   const navigation = useNavigation();
   const [text, setText] = useState("");
+  const [collectionR, setCollectionR] = useState("");
 
-  const[dish, setDish] = useState("");
+  const [dish, setDish] = useState("");
   const [dishes, setDishes] = useState([]);
   const [titleInput, setTitleInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
 
-  
- 
+  const createList = async () => {
+    const CollectionList = [];
+    CollectionList.push(
+      collection(db, "foods"),
+      collection(db, "users"),
+      collection(db, "books")
+    );
+    setCollectionR(CollectionList);
+    console.log(CollectionList.map((doc) => doc.id));
+  };
 
   const getData = async () => {
     try {
@@ -54,41 +81,39 @@ const TomatoScreen = () => {
         dishesList.push(doc.data());
         setDishes(dishesList);
       });
-
     } catch (error) {
       console.log(error);
     }
   };
-  
- const addData = async () => {
-   const docRef = await addDoc(collection(db, "foods"), {
-     title: titleInput,
-     price: parseInt(priceInput)
-   });
-   
-   console.log(`Documento agregado con éxito con ID: ${docRef.id}`);
- }
+
+  const addData = async () => {
+    const docRef = await addDoc(collection(db, "foods"), {
+      title: titleInput,
+      price: parseInt(priceInput),
+    });
+
+    console.log(`Documento agregado con éxito con ID: ${docRef.id}`);
+  };
   const updateData = async () => {
     this.title = titleInput;
     const docId = await getId(title);
     await updateDoc(doc(db, "foods", docId), {
       title: titleInput,
-      price: parseInt(priceInput)
-     });
-     console.log("Documento actualizado con éxito");
-  }
+      price: parseInt(priceInput),
+    });
+    console.log("Documento actualizado con éxito");
+  };
 
- const deleteData = async () => {
-   try {
-     const title = titleInput;
-     const docId = await getId(title);
-     await deleteDoc(doc(db, "foods", docId));
-     console.log("Documento eliminado con éxito");
-   } catch (error) {
-     console.error("Error deleting data:", error);
-   }
- };
- 
+  const deleteData = async () => {
+    try {
+      const title = titleInput;
+      const docId = await getId(title);
+      await deleteDoc(doc(db, "foods", docId));
+      console.log("Documento eliminado con éxito");
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
 
   const getId = async (titleid) => {
     const querySnapshot = await getDocs(collection(db, "foods"));
@@ -99,7 +124,7 @@ const TomatoScreen = () => {
       }
     }
     console.log("No se encontró el documento");
-  }
+  };
   const getFoodId = async () => {
     try {
       const title = titleInput;
@@ -109,7 +134,7 @@ const TomatoScreen = () => {
     } catch (error) {
       console.error("Error obteniendo getFoodId:", error);
     }
-  }
+  };
   const getFoodCol = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "foods"));
@@ -122,30 +147,30 @@ const TomatoScreen = () => {
     } catch (error) {
       console.error("Error obteniendo getFoodCol:", error);
     }
-  }
+  };
   const getCollectionId = async () => {
     try {
-      const objectid="";
+      const objectid = "";
       const querySnapshot = await getDocs(collection(db, "collectionNames"));
       for (const doc of querySnapshot.docs) {
-        console
-        if (doc.id === objectid) { 
+        console;
+        if (doc.id === objectid) {
           console.log("ID: ", doc.id);
           return doc.id;
         }
       }
-    }catch (error) {
+    } catch (error) {
       console.error("Error obteniendo getCollectionId:", error);
     }
-  }
+  };
 
   const getMultipleData = async () => {
     const q = query(collection(db, "foods"), where("price", "==", 2000));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
-});
-  }
+      console.log(doc.id, " => ", doc.data());
+    });
+  };
 
   const matchTitle = async () => {
     for (const dish of dishes) {
@@ -156,24 +181,38 @@ const TomatoScreen = () => {
       }
     }
     console.log("No se encontró el documento");
-  }
-  
-  
-  
-  const compareCollections = async (parametro, collectionPrincipal, campoComparacion, coleccionesSecundarias) => {
+  };
+
+  const compareCollections = async (
+    parametro,
+    collectionPrincipal,
+    campoComparacion,
+    coleccionesSecundarias
+  ) => {
     try {
-      const docRef = firebase.firestore().collection(collectionPrincipal).doc(parametro);
+      const docRef = firebase
+        .firestore()
+        .collection(collectionPrincipal)
+        .doc(parametro);
       const doc = await docRef.get();
       if (!doc.exists) {
-        throw new Error(`Documento no encontrado en la colección ${collectionPrincipal}`);
+        throw new Error(
+          `Documento no encontrado en la colección ${collectionPrincipal}`
+        );
       }
       const campoValor = doc.data()[campoComparacion];
       const resultados = [];
       for (const coleccionSecundaria of coleccionesSecundarias) {
-        const queryRef = firebase.firestore().collection(coleccionSecundaria).where(campoComparacion, '==', campoValor);
+        const queryRef = firebase
+          .firestore()
+          .collection(coleccionSecundaria)
+          .where(campoComparacion, "==", campoValor);
         const querySnapshot = await queryRef.get();
         if (querySnapshot.docs.length > 0) {
-          resultados.push({ coleccion: coleccionSecundaria, documento: querySnapshot.docs[0].data().id });
+          resultados.push({
+            coleccion: coleccionSecundaria,
+            documento: querySnapshot.docs[0].data().id,
+          });
         }
       }
       return resultados;
@@ -185,81 +224,85 @@ const TomatoScreen = () => {
 
   useEffect(() => {
     getAllData();
+    createList();
     /* getData(); */
   }, []);
 
   return (
-    <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent:"center" }}>    
-    <ScrollView 
-      showsVerticalScrollIndicator={false}
-      style={{height: '80%'}}
+    <SafeAreaView
+      style={{ paddingTop: "15%", flex: 1, justifyContent: "center" }}
     >
-      
-      <View style={styles.container}>
-      <AppLogoImage />
-      <WelcomeText />
-      <Ready /> 
-      <TextInput
-        style={styles.textinput}
-        value={titleInput}
-        onChangeText={(text) => {
-          setTitleInput(text);
-          console.log("Título ingresado:", text);
-        }}
-        placeholder="Ingrese el título"
-      ></TextInput>
-
-      <TextInput
-        style={styles.textinput}
-        value={priceInput}
-        onChangeText={(text) => {
-          setPriceInput(text);
-          console.log("Precio ingresado:", text);
-        }}
-        placeholder="Ingrese el precio"
-        keyboardType="numeric"
-      ></TextInput>
-      <Button title="Add data" onPress={() => addData()}/>
-      <Button title="Update data" onPress={() => updateData()}/>
-      <Button title="Delete data" onPress={() => deleteData()}/>
-      <Button title="get  multiple data" onPress={() => getMultipleData()}/>
-      <Button title="get id" onPress={() => getId()}/>
-      <Button title="get collection Id" onPress={() => getCollectionId()}/>
-      <Button title="Buscar" onPress={() => getData()}/>
-      <Button title="get food collection Id" onPress={() => getFoodCol()}/>
-      <Text
-        style={styles.text}
-        onPress={() => navigation.navigate("PurpleScreen" , {
-            nombre: "Joche",
-          })}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ height: "80%" }}
       >
-        El precio de {dish.title} es de: {dish.price} $
-      </Text>
-      {/*  <Button title="Go to Gold" onPress={() => navigation.navigate("GoldenScreen")}/> */}
+        <View style={styles.container}>
+          <AppLogoImage />
+          <WelcomeText />
+          <Ready />
+          <TextInput
+            style={styles.textinput}
+            value={titleInput}
+            onChangeText={(text) => {
+              setTitleInput(text);
+              console.log("Título ingresado:", text);
+            }}
+            placeholder="Ingrese el título"
+          ></TextInput>
 
-      <Text>
-        Menu:
-        {'\n'}
-        {dishes.map((dish, index) => (
-          <Text key={index}>
-            {index===0 /* dish.title.includes("Jopo") dish.price>1000 */ && (
-              <Text>
-                {dish.title + ": " }
-                
-            
-                {dish.price + " "}
-                {'\n'}
-              </Text>
-
-            )}
-            
+          <TextInput
+            style={styles.textinput}
+            value={priceInput}
+            onChangeText={(text) => {
+              setPriceInput(text);
+              console.log("Precio ingresado:", text);
+            }}
+            placeholder="Ingrese el precio"
+            keyboardType="numeric"
+          ></TextInput>
+          <Button title="Add data" onPress={() => addData()} />
+          <Button title="Update data" onPress={() => updateData()} />
+          <Button title="Delete data" onPress={() => deleteData()} />
+          <Button
+            title="get  multiple data"
+            onPress={() => getMultipleData()}
+          />
+          <Button title="get id" onPress={() => getId()} />
+          <Button title="get collection Id" onPress={() => getCollectionId()} />
+          <Button title="Buscar" onPress={() => getData()} />
+          <Button title="get food collection Id" onPress={() => getFoodCol()} />
+          <Text
+            style={styles.text}
+            onPress={() =>
+              navigation.navigate("PurpleScreen", {
+                nombre: "Joche",
+              })
+            }
+          >
+            El precio de {dish.title} es de: {dish.price} $
           </Text>
-        ))}
-      </Text>
-      
+          {/*  <Button title="Go to Gold" onPress={() => navigation.navigate("GoldenScreen")}/> */}
+
+          <Text>
+            Menu:
+            {"\n"}
+            {dishes.map((dish, index) => (
+              <Text key={index}>
+                {index ===
+                  0 /* dish.title.includes("Jopo") dish.price>1000 */ && (
+                  <Text>
+                    {dish.title + ": "}
+
+                    {dish.price + " "}
+                    {"\n"}
+                  </Text>
+                )}
+              </Text>
+            ))}
+          </Text>
         </View>
-    </ScrollView>
-    <BottomNavigationBar />
+      </ScrollView>
+      <BottomNavigationBar />
     </SafeAreaView>
   );
 };
@@ -278,7 +321,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "black",
     marginTop: 10,
-    textAlign:"center"
+    textAlign: "center",
   },
   textinput: {
     height: 40,
