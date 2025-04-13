@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { collection, getDoc, getDocs, doc, setDoc, addDoc, updateDoc, deleteDoc,query, where, documentId, orderBy   } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { getFirestore } from 'firebase/firestore';
+import { firebase } from '../firebaseConfig';
 
 
  
@@ -29,13 +30,14 @@ const TomatoScreen = () => {
 
   const getData = async () => {
     try {
-      title = titleInput;
+      const title = titleInput;
       const docId = await getId(title);
 
       const docRef = doc(db, "foods", docId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setDish(docSnap.data());
+        console.log("Document data:", docSnap.data());
       } else {
         console.log("No such document!");
       }
@@ -67,7 +69,7 @@ const TomatoScreen = () => {
    console.log(`Documento agregado con éxito con ID: ${docRef.id}`);
  }
   const updateData = async () => {
-    title = titleInput;
+    this.title = titleInput;
     const docId = await getId(title);
     await updateDoc(doc(db, "foods", docId), {
       title: titleInput,
@@ -76,35 +78,65 @@ const TomatoScreen = () => {
      console.log("Documento actualizado con éxito");
   }
 
-  const deleteData = async () => {
-    title = titleInput;
-    const docId = await getId(title);
-    await deleteDoc(doc(db, "foods", docId));
-
-  };
+ const deleteData = async () => {
+   try {
+     const title = titleInput;
+     const docId = await getId(title);
+     await deleteDoc(doc(db, "foods", docId));
+     console.log("Documento eliminado con éxito");
+   } catch (error) {
+     console.error("Error deleting data:", error);
+   }
+ };
  
 
   const getId = async (titleid) => {
     const querySnapshot = await getDocs(collection(db, "foods"));
     for (const doc of querySnapshot.docs) {
       if (doc.data().title === titleid) {
-        console.log("ID: ", doc.id, " => ", doc.data());
+        /* console.log("ID: ", doc.id, " contains: ", doc.data()); */
         return doc.id;
       }
     }
     console.log("No se encontró el documento");
   }
-  const getCollectionId = async () => {
-    const collectionName = "foods";
-    const tareaRef = doc(db, collectionName);
-    
-    for (const doc of querySnapshot.docs) {
-      if (doc.data().title === titleid) {
-        console.log("ID: ", doc.id, " => ", doc.data());
-        return doc.id;
-      }
+  const getFoodId = async () => {
+    try {
+      const title = titleInput;
+      const docId = await getId(title);
+      console.log("ID: ", docId);
+      return docId;
+    } catch (error) {
+      console.error("Error obteniendo getFoodId:", error);
     }
-    console.log("No se encontró el documento");
+  }
+  const getFoodCol = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "foods"));
+      for (const doc of querySnapshot.docs) {
+        if (doc.data().title === titleInput) {
+          console.log("ID: ", doc.id);
+          return doc.id;
+        }
+      }
+    } catch (error) {
+      console.error("Error obteniendo getFoodCol:", error);
+    }
+  }
+  const getCollectionId = async () => {
+    try {
+      const objectid="";
+      const querySnapshot = await getDocs(collection(db, "collectionNames"));
+      for (const doc of querySnapshot.docs) {
+        console
+        if (doc.id === objectid) { 
+          console.log("ID: ", doc.id);
+          return doc.id;
+        }
+      }
+    }catch (error) {
+      console.error("Error obteniendo getCollectionId:", error);
+    }
   }
 
   const getMultipleData = async () => {
@@ -126,14 +158,38 @@ const TomatoScreen = () => {
     console.log("No se encontró el documento");
   }
   
+  
+  
+  const compareCollections = async (parametro, collectionPrincipal, campoComparacion, coleccionesSecundarias) => {
+    try {
+      const docRef = firebase.firestore().collection(collectionPrincipal).doc(parametro);
+      const doc = await docRef.get();
+      if (!doc.exists) {
+        throw new Error(`Documento no encontrado en la colección ${collectionPrincipal}`);
+      }
+      const campoValor = doc.data()[campoComparacion];
+      const resultados = [];
+      for (const coleccionSecundaria of coleccionesSecundarias) {
+        const queryRef = firebase.firestore().collection(coleccionSecundaria).where(campoComparacion, '==', campoValor);
+        const querySnapshot = await queryRef.get();
+        if (querySnapshot.docs.length > 0) {
+          resultados.push({ coleccion: coleccionSecundaria, documento: querySnapshot.docs[0].data().id });
+        }
+      }
+      return resultados;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error al comparar colecciones: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
     getAllData();
     /* getData(); */
   }, []);
 
   return (
-    <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent:"center" }}>
-      
+    <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent:"center" }}>    
     <ScrollView 
       showsVerticalScrollIndicator={false}
       style={{height: '80%'}}
@@ -169,6 +225,8 @@ const TomatoScreen = () => {
       <Button title="get  multiple data" onPress={() => getMultipleData()}/>
       <Button title="get id" onPress={() => getId()}/>
       <Button title="get collection Id" onPress={() => getCollectionId()}/>
+      <Button title="Buscar" onPress={() => getData()}/>
+      <Button title="get food collection Id" onPress={() => getFoodCol()}/>
       <Text
         style={styles.text}
         onPress={() => navigation.navigate("PurpleScreen" , {
