@@ -12,7 +12,8 @@ This is a React Native app that allows users to register, log in, and navigate t
 
 1. Clone the repository
 2. Install dependencies with `npm install`
-3. Start the app with `npm start`
+3. npm install expo@52.0.43
+4. Start the app with `npm start`
 
 ## Screenshots
 
