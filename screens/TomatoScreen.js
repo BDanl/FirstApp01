@@ -44,82 +44,121 @@ const TomatoScreen = () => {
   const [titleInput, setTitleInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
 
-  const getColId = async () => {
+  const getColId = async (targetTitle = titleInput) => {
     try {
-      return await createList();
-    } catch (error) {
-      console.error("Error en getColId: ", error);
-      return null; 
-    }
-  };
-  const createList = async () => {
-    try {
-      const CollectionList = [];
-      CollectionList.push(
-        collection(db, "foods"),
-        collection(db, "users"),
-        collection(db, "books")
+      const collections = ["foods", "users", "books"];
+
+      console.log(
+        `Buscando documento con título "${targetTitle}" en colecciones:`,
+        collections
       );
-      setCollectionR(CollectionList);
-      const colR = await collectionName(CollectionList);
-      return colR;
-    } catch (error) {
-      console.error("Error en createList: ", error);
-      return null; 
-    }
-  };
-  const collectionName = async (collectionList) => {
-    try {
-      for (const collectionRef of collectionList) {
-        console.log(`Procesando colección: ${collectionRef.id}`);
-        const querySnapshot = await getDocs(collectionRef);
-        for (const doc of querySnapshot.docs) {
-          console.log(`Procesando documento: ${doc.id}`);
-          if (doc.data().title === titleInput) {
-            return doc.data().objectid;
-          } else {
-            /* console.log(`Documento ${doc.id} no coincide con lo buscado en el input: ${titleInput}`); */
-          }
+
+      for (const collectionName of collections) {
+        console.log(`Procesando colección: ${collectionName}`);
+
+        const querySnapshot = await getDocs(
+          query(
+            collection(db, collectionName),
+            where("title", "==", targetTitle)
+          )
+        );
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          console.log(
+            `Documento encontrado en colección ${collectionName}, doc.id: ${doc.id}`
+          );
+
+          const objectid = doc.data().objectid;
+          return objectid || collectionName;
         }
       }
+
+      console.log(
+        `No se encontró ningún documento con título "${targetTitle}"`
+      );
+      return null;
     } catch (error) {
-      console.error("Error en collectionName: ", error);
+      console.error("Error en getColId:", error);
+      return null;
     }
   };
 
- const getId = async (titleid) => {
-   try {
-     const colId = await getColId();
-     console.log("getId colID: ", colId);
-     const querySnapshot = await getDocs(collection(db, colId));
-     for (const doc of querySnapshot.docs) {
-       if (doc.data().title === titleid) {
-         /* console.log("ID: ", doc.id, " contains: ", doc.data()); */
-         return doc.id;
-       }
-     }
-     /* console.log("No se encontró el documento en getId"); */
-   } catch (error) {
-     console.error("Error en getId: ", error);
-     return null; // o algún otro valor por defecto
-   }
- };
+  const getId = async (titleid) => {
+    try {
+      const colId = await getColId(titleid);
+
+      if (!colId) {
+        console.log(`No se encontró colección para el título "${titleid}"`);
+        return null;
+      }
+
+      console.log(
+        `Buscando documento con título "${titleid}" en colección ${colId}`
+      );
+
+      const querySnapshot = await getDocs(
+        query(collection(db, colId), where("title", "==", titleid))
+      );
+
+      if (!querySnapshot.empty) {
+        const docId = querySnapshot.docs[0].id;
+        console.log(`Documento encontrado con ID: ${docId}`);
+        return docId;
+      }
+
+      console.log(
+        `No se encontró documento con título "${titleid}" en colección ${colId}`
+      );
+      return null;
+    } catch (error) {
+      console.error("Error en getId:", error);
+      return null;
+    }
+  };
 
   const getData = async () => {
     try {
+      if (!titleInput || titleInput.trim() === "") {
+        console.log("Error: El título de búsqueda está vacío");
+        return;
+      }
       const colId = await getColId();
-      const title = titleInput;
-      const docId = await getId(title);
+      console.log("colID:", colId);
+      if (!colId) {
+        console.log("Error: No se pudo determinar la colección del documento");
+
+        return;
+      }
+      const docId = await getId(titleInput);
+      console.log("docID:", docId);
+
+      if (!docId) {
+        console.log(
+          `Error: No se encontró documento con título "${titleInput}"`
+        );
+
+        return;
+      }
       const docRef = doc(db, colId, docId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setDish(docSnap.data());
         console.log("Dato obtenido:", docSnap.data());
       } else {
-        console.log("Dato no encontrado");
+        console.log(
+          `Documento existe en ruta (${colId}/${docId}) pero no tiene datos`
+        );
+        setDish({});
       }
     } catch (error) {
       console.error("Error obteniendo datos en getData:", error);
+      if (error.code === "permission-denied") {
+        console.log("Error de permisos: No tienes acceso a este documento");
+      } else if (error.message && error.message.includes("empty path")) {
+        console.log("Error: La ruta del documento está incompleta o vacía");
+      }
+      setDish({});
     }
   };
 
