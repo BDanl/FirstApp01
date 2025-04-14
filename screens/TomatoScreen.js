@@ -44,32 +44,82 @@ const TomatoScreen = () => {
   const [titleInput, setTitleInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
 
-  const createList = async () => {
-    const CollectionList = [];
-    CollectionList.push(
-      collection(db, "foods"),
-      collection(db, "users"),
-      collection(db, "books")
-    );
-    setCollectionR(CollectionList);
-    console.log(CollectionList.map((doc) => doc.id));
+  const getColId = async () => {
+    try {
+      return await createList();
+    } catch (error) {
+      console.error("Error en getColId: ", error);
+      return null; 
+    }
   };
+  const createList = async () => {
+    try {
+      const CollectionList = [];
+      CollectionList.push(
+        collection(db, "foods"),
+        collection(db, "users"),
+        collection(db, "books")
+      );
+      setCollectionR(CollectionList);
+      const colR = await collectionName(CollectionList);
+      return colR;
+    } catch (error) {
+      console.error("Error en createList: ", error);
+      return null; 
+    }
+  };
+  const collectionName = async (collectionList) => {
+    try {
+      for (const collectionRef of collectionList) {
+        console.log(`Procesando colección: ${collectionRef.id}`);
+        const querySnapshot = await getDocs(collectionRef);
+        for (const doc of querySnapshot.docs) {
+          console.log(`Procesando documento: ${doc.id}`);
+          if (doc.data().title === titleInput) {
+            return doc.data().objectid;
+          } else {
+            /* console.log(`Documento ${doc.id} no coincide con lo buscado en el input: ${titleInput}`); */
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error en collectionName: ", error);
+    }
+  };
+
+ const getId = async (titleid) => {
+   try {
+     const colId = await getColId();
+     console.log("getId colID: ", colId);
+     const querySnapshot = await getDocs(collection(db, colId));
+     for (const doc of querySnapshot.docs) {
+       if (doc.data().title === titleid) {
+         /* console.log("ID: ", doc.id, " contains: ", doc.data()); */
+         return doc.id;
+       }
+     }
+     /* console.log("No se encontró el documento en getId"); */
+   } catch (error) {
+     console.error("Error en getId: ", error);
+     return null; // o algún otro valor por defecto
+   }
+ };
 
   const getData = async () => {
     try {
+      const colId = await getColId();
       const title = titleInput;
       const docId = await getId(title);
-
-      const docRef = doc(db, "foods", docId);
+      const docRef = doc(db, colId, docId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setDish(docSnap.data());
-        console.log("Document data:", docSnap.data());
+        console.log("Dato obtenido:", docSnap.data());
       } else {
-        console.log("No such document!");
+        console.log("Dato no encontrado");
       }
     } catch (error) {
-      console.error("Error obteniendo datos:", error);
+      console.error("Error obteniendo datos en getData:", error);
     }
   };
 
@@ -90,13 +140,14 @@ const TomatoScreen = () => {
     const docRef = await addDoc(collection(db, "foods"), {
       title: titleInput,
       price: parseInt(priceInput),
+      objectid: "foods",
     });
 
     console.log(`Documento agregado con éxito con ID: ${docRef.id}`);
   };
   const updateData = async () => {
-    this.title = titleInput;
-    const docId = await getId(title);
+    const titleU = titleInput;
+    const docId = await getId(titleU);
     await updateDoc(doc(db, "foods", docId), {
       title: titleInput,
       price: parseInt(priceInput),
@@ -115,16 +166,6 @@ const TomatoScreen = () => {
     }
   };
 
-  const getId = async (titleid) => {
-    const querySnapshot = await getDocs(collection(db, "foods"));
-    for (const doc of querySnapshot.docs) {
-      if (doc.data().title === titleid) {
-        /* console.log("ID: ", doc.id, " contains: ", doc.data()); */
-        return doc.id;
-      }
-    }
-    console.log("No se encontró el documento");
-  };
   const getFoodId = async () => {
     try {
       const title = titleInput;
@@ -148,7 +189,7 @@ const TomatoScreen = () => {
       console.error("Error obteniendo getFoodCol:", error);
     }
   };
-  const getCollectionId = async () => {
+  const getCollectionIdMaybe = async () => {
     try {
       const objectid = "";
       const querySnapshot = await getDocs(collection(db, "collectionNames"));
@@ -224,7 +265,7 @@ const TomatoScreen = () => {
 
   useEffect(() => {
     getAllData();
-    createList();
+    /* createList(); */
     /* getData(); */
   }, []);
 
@@ -252,6 +293,7 @@ const TomatoScreen = () => {
 
           <TextInput
             style={styles.textinput}
+            onSubmitEditing={""}
             value={priceInput}
             onChangeText={(text) => {
               setPriceInput(text);
@@ -268,9 +310,8 @@ const TomatoScreen = () => {
             onPress={() => getMultipleData()}
           />
           <Button title="get id" onPress={() => getId()} />
-          <Button title="get collection Id" onPress={() => getCollectionId()} />
           <Button title="Buscar" onPress={() => getData()} />
-          <Button title="get food collection Id" onPress={() => getFoodCol()} />
+          <Button title="get collection ID" onPress={() => getColId()} />
           <Text
             style={styles.text}
             onPress={() =>
