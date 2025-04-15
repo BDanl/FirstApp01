@@ -5,7 +5,7 @@ import { useFirestore } from './useFirestore';
 export const useFoods = () => {
   const [foods, setFoods] = useState([]);
   const [currentFood, setCurrentFood] = useState(null);
-  const { loading, error, getAllData, getData, addData, updateData, deleteData } = useFirestore();
+  const { loading, error, getAllData, getData, addData, updateData, deleteData, getMultipleData } = useFirestore();
   
   // Cargar todos los alimentos
   const loadAllFoods = async () => {
@@ -41,6 +41,15 @@ export const useFoods = () => {
   const deleteFood = async (title) => {
     return await deleteData(title);
   };
+
+  // Obtener alimentos por categoría
+  const loadFoodsByCategory = async (category) => {
+    console.log(category);
+    const result = await getMultipleData('foods', 'category', category);
+    setFoods(result);
+    console.log("result: ", result);
+    return result;
+  };
   
   return {
     foods,
@@ -51,7 +60,8 @@ export const useFoods = () => {
     getFood,
     addFood,
     updateFood,
-    deleteFood
+    deleteFood,
+    loadFoodsByCategory
   };
 };
 

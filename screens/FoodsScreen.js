@@ -12,10 +12,12 @@ import {
 import { useFoods } from "../hooks/useFoods";
 import AppLogoImage from "../components/AppLogoImage";
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import DropdownComponent from "../components/DropdownComponent";
 
 const FoodScreen = () => {
   const [titleInput, setTitleInput] = useState('');
   const [priceInput, setPriceInput] = useState('');
+  const [categoryInput, setCategoryInput] = useState('');
   const { 
     foods, 
     currentFood, 
@@ -25,7 +27,8 @@ const FoodScreen = () => {
     getFood, 
     addFood, 
     updateFood, 
-    deleteFood 
+    deleteFood,
+    loadFoodsByCategory
   } = useFoods();
 
   useEffect(() => {
@@ -35,7 +38,8 @@ const FoodScreen = () => {
 
   const handleSearch = () => {
     if (titleInput.trim()) {
-      getFood(titleInput);
+      const formattedInput = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      getFood(formattedInput);
     }
   };
 
@@ -52,11 +56,12 @@ const FoodScreen = () => {
 
   const handleUpdate = async () => {
     if (titleInput.trim() && priceInput.trim()) {
-      await updateFood(titleInput, priceInput);
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      await updateFood(formattedTitle, priceInput);
       // Recargar la lista después de actualizar
       loadAllFoods();
       // También actualizar el item actual
-      getFood(titleInput);
+      getFood(formattedTitle);
     }
   };
 
@@ -72,11 +77,19 @@ const FoodScreen = () => {
     }
   };
 
+  const handleLoadByCategory = async () => {
+    if (categoryInput.trim()) {
+      await loadFoodsByCategory(categoryInput);
+    }
+    
+  };
+
   return (
     <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent: "center" }}>
       <ScrollView showsVerticalScrollIndicator={false} style={{ height: "80%" }}>
         <View style={styles.container}>
           <AppLogoImage />
+          <DropdownComponent/>
           
           {error && <Text style={styles.errorText}>{error}</Text>}
           
@@ -94,6 +107,12 @@ const FoodScreen = () => {
             placeholder="Ingrese el precio"
             keyboardType="numeric"
           />
+          <TextInput
+            style={styles.textInput}
+            value={categoryInput}
+            onChangeText={setCategoryInput}
+            placeholder="Ingrese la categoria"
+          />
           
           <View style={styles.buttonContainer}>
             <Button title="Buscar" onPress={handleSearch} disabled={loading} />
@@ -101,6 +120,7 @@ const FoodScreen = () => {
             <Button title="Actualizar" onPress={handleUpdate} disabled={loading} />
             <Button title="Eliminar" onPress={handleDelete} disabled={loading} />
             <Button title="Cargar Todos" onPress={loadAllFoods} disabled={loading} />
+            <Button title="Load by category" onPress={handleLoadByCategory} />
           </View>
           
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
