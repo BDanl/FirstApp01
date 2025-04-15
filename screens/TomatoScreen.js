@@ -83,7 +83,6 @@ const TomatoScreen = () => {
       return null;
     }
   };
-
   const getId = async (titleid) => {
     try {
       const colId = await getColId(titleid);
@@ -116,7 +115,6 @@ const TomatoScreen = () => {
       return null;
     }
   };
-
   const getData = async () => {
     try {
       if (!titleInput || titleInput.trim() === "") {
@@ -124,7 +122,6 @@ const TomatoScreen = () => {
         return;
       }
       const colId = await getColId();
-      console.log("colID:", colId);
       if (!colId) {
         console.log("Error: No se pudo determinar la colección del documento");
 
@@ -161,21 +158,54 @@ const TomatoScreen = () => {
       setDish({});
     }
   };
-
   const getAllData = async () => {
     try {
-      const queryFoods = await getDocs(collection(db, "foods"));
+      const colId = await getColId();
+      console.log("colID:", colId);
+
+      const queryFoods = await getDocs(collection(db, colId));
       const dishesList = [];
       queryFoods.forEach((doc) => {
         dishesList.push(doc.data());
         setDishes(dishesList);
       });
     } catch (error) {
-      console.log(error);
+      console.log("Error obteniendo getAllData:",error);
     }
   };
+  
+  const updateData = async () => {
+    const colId = await getColId();
 
+    const titleU = titleInput;
+    const docId = await getId(titleU);
+    await updateDoc(doc(db, colId, docId), {
+      title: titleInput,
+      price: parseInt(priceInput),
+    });
+    console.log("Documento actualizado con éxito");
+  };
+  const deleteData = async () => {
+    try {
+      const colId = await getColId();
+
+      const title = titleInput;
+      const docId = await getId(title);
+      await deleteDoc(doc(db, colId, docId));
+      console.log("Documento eliminado con éxito");
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
+  const getMultipleData = async () => {
+    const q = query(collection(db, "foods"), where("price", "==", 2000));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+    });
+  };
   const addData = async () => {
+    
     const docRef = await addDoc(collection(db, "foods"), {
       title: titleInput,
       price: parseInt(priceInput),
@@ -184,27 +214,6 @@ const TomatoScreen = () => {
 
     console.log(`Documento agregado con éxito con ID: ${docRef.id}`);
   };
-  const updateData = async () => {
-    const titleU = titleInput;
-    const docId = await getId(titleU);
-    await updateDoc(doc(db, "foods", docId), {
-      title: titleInput,
-      price: parseInt(priceInput),
-    });
-    console.log("Documento actualizado con éxito");
-  };
-
-  const deleteData = async () => {
-    try {
-      const title = titleInput;
-      const docId = await getId(title);
-      await deleteDoc(doc(db, "foods", docId));
-      console.log("Documento eliminado con éxito");
-    } catch (error) {
-      console.error("Error deleting data:", error);
-    }
-  };
-
   const getFoodId = async () => {
     try {
       const title = titleInput;
@@ -244,13 +253,7 @@ const TomatoScreen = () => {
     }
   };
 
-  const getMultipleData = async () => {
-    const q = query(collection(db, "foods"), where("price", "==", 2000));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-    });
-  };
+  
 
   const matchTitle = async () => {
     for (const dish of dishes) {
@@ -303,7 +306,7 @@ const TomatoScreen = () => {
   };
 
   useEffect(() => {
-    getAllData();
+    /* getAllData(); */
     /* createList(); */
     /* getData(); */
   }, []);
@@ -344,6 +347,7 @@ const TomatoScreen = () => {
           <Button title="Add data" onPress={() => addData()} />
           <Button title="Update data" onPress={() => updateData()} />
           <Button title="Delete data" onPress={() => deleteData()} />
+            <Button title="get all data" onPress={() => getAllData()} />
           <Button
             title="get  multiple data"
             onPress={() => getMultipleData()}
@@ -368,8 +372,8 @@ const TomatoScreen = () => {
             {"\n"}
             {dishes.map((dish, index) => (
               <Text key={index}>
-                {index ===
-                  0 /* dish.title.includes("Jopo") dish.price>1000 */ && (
+                {/* index ===
+                  0 */ /* dish.title.includes("Jopo") dish.price>1000 */ /* && */ (
                   <Text>
                     {dish.title + ": "}
 
