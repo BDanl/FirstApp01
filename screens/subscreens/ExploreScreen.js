@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, Button } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import React from "react";
-import BottomNavigationBar from "../../components/BottomNavigationBar";
 
 
 const ExploreScreen = () => {
@@ -11,7 +10,6 @@ const ExploreScreen = () => {
     <View style={styles.container}>
       <Text style={styles.text}>ExploreScreen</Text>
       <Button title="Volver a WorkoutScreen" onPress={() => navigation.goBack()} />
-      <BottomNavigationBar/>
     </View>
   );
 };

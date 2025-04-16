@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native";
-import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const PurpleScreen = () => {
     const route = useRoute();
@@ -15,7 +14,6 @@ const PurpleScreen = () => {
         <View style={styles.container}>
             <Text style={styles.text}>PurpleScreen</Text>
             <Text style={styles.text}>Hello, {userName}.</Text>
-            <BottomNavigationBar/>
         </View>
     )
 }

@@ -12,7 +12,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import AppLogoImage from "../components/AppLogoImage";
 import WelcomeText from "../components/WelcomeText";
 import Ready from "../components/Ready";
-import BottomNavigationBar from "../components/BottomNavigationBar";
 import { TextInput } from "react-native-gesture-handler";
 import React from "react";
 import { useEffect } from "react";
@@ -386,7 +385,6 @@ const TomatoScreen = () => {
           </Text>
         </View>
       </ScrollView>
-      <BottomNavigationBar />
     </SafeAreaView>
   );
 };

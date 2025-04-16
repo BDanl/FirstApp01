@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Button, TextInput } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native";
-import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const GoldScreen = () => {
     const navigation = useNavigation();
@@ -38,7 +37,6 @@ const GoldScreen = () => {
                       })
                     }
                   ></TextInput>
-            <BottomNavigationBar/>
         </View>
     )
 }

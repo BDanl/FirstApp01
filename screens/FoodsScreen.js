@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { useFoods } from "../hooks/useFoods";
 import AppLogoImage from "../components/AppLogoImage";
-import BottomNavigationBar from "../components/BottomNavigationBar";
 import DropdownComponent from "../components/DropdownComponent";
+import { useFoodContext } from '../context/FoodContext';
 
 const FoodScreen = () => {
   const [titleInput, setTitleInput] = useState('');
@@ -29,48 +29,44 @@ const FoodScreen = () => {
     updateFood, 
     deleteFood,
     loadFoodsByCategory
-  } = useFoods();
+  } = useFoodContext();
 
   useEffect(() => {
-    // Cargar datos iniciales
     loadAllFoods();
   }, []);
 
-  const handleSearch = () => {
+  const handleSearch = async() => {
     if (titleInput.trim()) {
       const formattedInput = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
-      getFood(formattedInput);
+      await getFood(formattedInput);
     }
   };
 
   const handleAdd = async () => {
-    if (titleInput.trim() && priceInput.trim()) {
-      await addFood(titleInput, priceInput);
-      // Recargar la lista después de añadir
+    if (titleInput.trim() && priceInput.trim() && categoryInput.trim()) {
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      await addFood(formattedTitle, priceInput, categoryInput);
       loadAllFoods();
-      // Limpiar inputs
       setTitleInput('');
       setPriceInput('');
     }
   };
 
   const handleUpdate = async () => {
-    if (titleInput.trim() && priceInput.trim()) {
+    if (titleInput.trim() && priceInput.trim() && categoryInput.trim()) {
       const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
-      await updateFood(formattedTitle, priceInput);
-      // Recargar la lista después de actualizar
+      const formattedCategory = categoryInput.trim().toLowerCase();
+      await updateFood(formattedTitle, priceInput, formattedCategory);
       loadAllFoods();
-      // También actualizar el item actual
       getFood(formattedTitle);
     }
   };
 
   const handleDelete = async () => {
     if (titleInput.trim()) {
-      await deleteFood(titleInput);
-      // Recargar la lista después de eliminar
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      await deleteFood(formattedTitle);
       loadAllFoods();
-      // Limpiar el item actual
       setCurrentFood(null);
       setTitleInput('');
       setPriceInput('');
@@ -79,9 +75,9 @@ const FoodScreen = () => {
 
   const handleLoadByCategory = async () => {
     if (categoryInput.trim()) {
-      await loadFoodsByCategory(categoryInput);
+      const formattedInput = categoryInput.trim().toLowerCase();
+      await loadFoodsByCategory(formattedInput);
     }
-    
   };
 
   return (
@@ -89,17 +85,14 @@ const FoodScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} style={{ height: "80%" }}>
         <View style={styles.container}>
           <AppLogoImage />
-          <DropdownComponent/>
-          
+          <DropdownComponent/>  
           {error && <Text style={styles.errorText}>{error}</Text>}
-          
           <TextInput
             style={styles.textInput}
             value={titleInput}
             onChangeText={setTitleInput}
             placeholder="Ingrese el título"
           />
-
           <TextInput
             style={styles.textInput}
             value={priceInput}
@@ -113,7 +106,6 @@ const FoodScreen = () => {
             onChangeText={setCategoryInput}
             placeholder="Ingrese la categoria"
           />
-          
           <View style={styles.buttonContainer}>
             <Button title="Buscar" onPress={handleSearch} disabled={loading} />
             <Button title="Añadir" onPress={handleAdd} disabled={loading} />
@@ -122,15 +114,12 @@ const FoodScreen = () => {
             <Button title="Cargar Todos" onPress={loadAllFoods} disabled={loading} />
             <Button title="Load by category" onPress={handleLoadByCategory} />
           </View>
-          
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          
           {currentFood && (
             <Text style={styles.foodDetail}>
               El precio de {currentFood.title} es de: {currentFood.price} $
             </Text>
           )}
-          
           <Text style={styles.sectionTitle}>Menu:</Text>
           {foods.map((food, index) => (
             <Text key={index} style={styles.foodItem}>
@@ -139,7 +128,7 @@ const FoodScreen = () => {
           ))}
         </View>
       </ScrollView>
-      <BottomNavigationBar />
+      
     </SafeAreaView>
   );
 };

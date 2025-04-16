@@ -12,18 +12,13 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-/**
- * Custom hook para manejar operaciones CRUD en Firestore
- */
+
 export const useFirestore = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [allData, setAllData] = useState([]);
 
-  /**
-   * Busca el ID de la colección basado en el título del documento
-   */
   const getColId = async (targetTitle) => {
     try {
       setLoading(true);
@@ -57,9 +52,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Obtiene el ID del documento basado en su título
-   */
   const getId = async (titleid) => {
     try {
       setLoading(true);
@@ -92,9 +84,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Obtiene un documento específico por su título
-   */
   const getData = async (titleInput) => {
     try {
       setLoading(true);
@@ -145,9 +134,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Obtiene todos los documentos de una colección
-   */
   const getAllData = async (collectionName) => {
     try {
       setLoading(true);
@@ -183,9 +169,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Añade un nuevo documento a una colección
-   */
   const addData = async (collectionName, data) => {
     try {
       setLoading(true);
@@ -206,9 +189,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Actualiza un documento existente
-   */
   const updateData = async (titleInput, newData) => {
     try {
       setLoading(true);
@@ -241,9 +221,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Elimina un documento por su título
-   */
   const deleteData = async (titleInput) => {
     try {
       setLoading(true);
@@ -276,9 +253,6 @@ export const useFirestore = () => {
     }
   };
 
-  /**
-   * Obtiene múltiples documentos según un criterio de filtrado
-   */
   const getMultipleData = async (collectionName, field, value) => {
     try {
       setLoading(true);

@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
-import { useFoods } from '../hooks/useFoods';
+/* import { useFoods } from '../hooks/useFoods'; */
+import { useFoodContext } from '../context/FoodContext';
 
 const DropdownButton = () => {
-  const { loadFoodsByCategory } = useFoods();
+  const { loadFoodsByCategory } = useFoodContext();
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [items, setItems] = useState([
     { id: 1, label: 'vicio' },
-    { id: 2, label: 'Verduras' },
-    { id: 3, label: 'Carnes' },
+    { id: 2, label: 'visio' },
   ]);
 
   const handleSelectItem = async (item) => {
-    await loadFoodsByCategory(item.label);
+    setSelectedItem(item); // Update the selected item state
+    try {
+      const results = await loadFoodsByCategory(item.label);
+      /* console.log("Foods loaded successfully:", results); */
+    } catch (error) {
+      /* console.error("Error loading foods:", error); */
+    }
     setVisible(false);
   };
 
@@ -30,7 +36,7 @@ const DropdownButton = () => {
         onPress={() => setVisible(true)}
       >
         <Text style={{ fontSize: 16, color: '#666' }}>
-          {selectedItem ? selectedItem.label : 'Select a category'}
+          {selectedItem ? selectedItem.label : 'Selecciona una categoria'}
         </Text>
       </TouchableOpacity>
       <Modal
@@ -45,6 +51,7 @@ const DropdownButton = () => {
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
           }}
+          activeOpacity={1} // Prevents closing when clicking inside the modal
           onPress={() => setVisible(false)}
         >
           <View
@@ -58,8 +65,14 @@ const DropdownButton = () => {
             <FlatList
               data={items}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleSelectItem(item)}>
-                  <Text style={{ padding: 10, fontSize: 16, color: '#333' }}>
+                <TouchableOpacity 
+                  onPress={() => handleSelectItem(item)}
+                  style={{
+                    padding: 10,
+                    backgroundColor: selectedItem?.id === item.id ? '#f0f0f0' : 'transparent',
+                  }}
+                >
+                  <Text style={{ fontSize: 16, color: '#333' }}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>

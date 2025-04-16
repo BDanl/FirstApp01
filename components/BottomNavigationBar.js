@@ -9,18 +9,18 @@ const BottomNavigationBar = () => {
     return (
       <>
       <View style={styles.nav}>
-      <TouchableOpacity style={styles.navBtn}>
-        <AntDesign name="home" size={24} color="black" onPress={() => navigation.navigate("TomatoScreen")}/>
+      <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate("TomatoScreen")}>
+        <AntDesign name="home" size={24} color="black" />
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navBtn}>
-        <Entypo name="heart" size={24} color="black" onPress={()=> navigation.navigate("PurpleScreen")}/>
+      <TouchableOpacity style={styles.navBtn} onPress={()=> navigation.navigate("PurpleScreen")}>
+        <Entypo name="heart" size={24} color="black" />
         <Text style={styles.navText}>Exercises</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navBtn}>
-        <AntDesign name="checksquare" size={24} color="black" onPress={()=> navigation.navigate("WorkoutScreen")}/>
+      <TouchableOpacity style={styles.navBtn} onPress={()=> navigation.navigate("WorkoutScreen")}>
+        <AntDesign name="checksquare" size={24} color="black" />
         <Text style={styles.navText}>Follow Up</Text>
       </TouchableOpacity>
 
@@ -29,8 +29,8 @@ const BottomNavigationBar = () => {
         <Text style={styles.navText}>Schedule</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navBtn}>
-        <FontAwesome name="user" size={24} color="black" onPress={()=> navigation.navigate("LoginScreen")}/>
+      <TouchableOpacity style={styles.navBtn} onPress={()=> navigation.navigate("LoginScreen")}>
+        <FontAwesome name="user" size={24} color="black" />
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
     </View>
