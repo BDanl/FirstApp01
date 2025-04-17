@@ -4,12 +4,13 @@ import {
   Text,
   TextInput,
   Button,
-  Touchable,
   TouchableOpacity,
   StyleSheet,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
+  ScrollView,
+  Platform
 } from "react-native";
 import AppLogoImage from "../components/AppLogoImage";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -24,19 +25,19 @@ export default function Register({ navigation }) {
   const [gender, setGender] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-    useEffect(() => {
-      const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-        setKeyboardVisible(true);
-      });
-      const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-        setKeyboardVisible(false);
-      });
-  
-      return () => {
-        showSubscription.remove();
-        hideSubscription.remove();
-      };
-    }, []);
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const redirectLogin = () => {
     navigation.navigate("LoginScreen");
@@ -47,11 +48,9 @@ export default function Register({ navigation }) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         Alert.alert("Usuario registrado:", email);
-        console.log("Usuario registrado:", userCredential.user);
         navigation.navigate("LoginScreen");
       })
       .catch((error) => {
-        console.log("Error:", error.code);
         const errorMessage =
           error.code === "auth/email-already-in-use"
             ? "Este correo ya está registrado"
@@ -68,95 +67,120 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-      <View style={{ paddingTop: "25%", justifyContent: "center", flex:1}}>
-      {!isKeyboardVisible && (
-          <View style={styles.container}>
-            <AppLogoImage />
-            <Text style={styles.text}>Rise your Health</Text>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ paddingTop: "15%", flex: 1 }}>
+          {/* Logo y título (ocultos cuando el teclado está visible) */}
+          {!isKeyboardVisible && (
+            <View style={styles.headerContainer}>
+              <AppLogoImage />
+              <Text style={styles.title}>Rise your Health</Text>
+            </View>
+          )}
+
+          {/* Formulario de registro */}
+          <View style={styles.formContainer}>
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              onChangeText={setEmail}
+              style={styles.input}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            <Text style={styles.label}>Contraseña:</Text>
+            <TextInput
+              secureTextEntry
+              onChangeText={setPassword}
+              style={styles.input}
+            />
+
+            <Text style={styles.label}>Nombre:</Text>
+            <TextInput
+              onChangeText={setName}
+              style={styles.input}
+            />
+
+            <Text style={styles.label}>Apellido:</Text>
+            <TextInput
+              onChangeText={setLastName}
+              style={styles.input}
+            />
+
+            <Text style={styles.label}>Edad:</Text>
+            <TextInput
+              onChangeText={setAge}
+              style={styles.input}
+              keyboardType="numeric"
+            />
+
+            <Text style={styles.label}>Género:</Text>
+            <TextInput
+              onChangeText={setGender}
+              style={styles.input}
+            />
+
+            <Button 
+              title="Registrarse" 
+              onPress={handleSignUp} 
+              style={styles.registerButton}
+            />
+
+            <TouchableOpacity onPress={redirectLogin} style={styles.loginLink}>
+              <Text style={styles.loginText}>¿Ya tienes cuenta? Inicia sesión</Text>
+            </TouchableOpacity>
           </View>
-        )}
-
-      <View style={styles.container2}>
-        <Text>Email:</Text>
-        <TextInput
-          onChangeText={setEmail}
-          style={{ borderWidth: 1, marginBottom: 10 }}
-        />
-        <Text>Contraseña:</Text>
-        <TextInput
-          secureTextEntry
-          onChangeText={setPassword}
-          style={{
-            borderWidth: 1,
-            marginBottom: 10,
-          }}
-        />
-        <Text>Nombre:</Text>
-        <TextInput
-          onChangeText={setName}
-          style={{ borderWidth: 1, marginBottom: 10 }}
-        />
-        <Text>Apellido:</Text>
-        <TextInput
-          onChange={setLastName}
-          onChangeText={setLastName}
-          style={{ borderWidth: 1, marginBottom: 10 }}
-        />
-        <Text>Edad:</Text>
-        <TextInput
-          onChangeText={setAge}
-          style={{ borderWidth: 1, marginBottom: 10 }}
-        />
-        <Text>Género:</Text>
-        <TextInput
-          onChangeText={setGender}
-          style={{ borderWidth: 1, marginBottom: 10 }}
-        />
-        <Button title="Registrarse" onPress={handleSignUp} />
-
-        <TouchableOpacity onPress={redirectLogin}>
-          <Text
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              textAlign: "center",
-              color: "blue",
-              margin: 5,
-            }}
-          >
-            {"¿Ya tienes cuenta?"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
-    
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "flex-end",
-    alignItems: "center",
-    flex: .5,
-    
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
   },
-  container2: {
-    justifyContent: "center",
-    alignSelf:"center",
-    flex: 1,
-    justifyContent:"flex-start",
-    marginBottom: "20%",
-    marginTop:"10%",
-    width:"80%"
-  },
-  text: {
+  title: {
     fontSize: 30,
     fontWeight: "500",
     color: "black",
     marginTop: 20,
     fontFamily: "serif",
     fontStyle: "italic",
+  },
+  formContainer: {
+    width: '85%',
+    alignSelf: 'center',
+    marginBottom: 30,
+  },
+  label: {
+    marginBottom: 5,
+    fontWeight: '500',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 12,
+    marginBottom: 15,
+  },
+  registerButton: {
+    marginTop: 20,
+  },
+  loginLink: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  loginText: {
+    color: 'blue',
+    textAlign: 'center',
   },
 });

@@ -16,7 +16,7 @@ const AppStack = createStackNavigator();
 
 function MainStackNavigator() {
     return (
-        <AppStack.Navigator initialRouteName="TabHome" screenOptions={{ headerShown: false }}>
+        <AppStack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
 
             <AppStack.Screen name="TabHome" component={TabNavigator} />
             

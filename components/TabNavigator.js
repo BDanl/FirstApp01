@@ -9,6 +9,8 @@ import LoginScreen from "../screens/LoginScreen";
 import FoodsScreen from "../screens/FoodsScreen";
 // Para iconos (opcional)
  import { Ionicons } from '@expo/vector-icons';
+import GoldScreen from '../screens/GoldScreen';
+import PurpleScreen from '../screens/PurpleScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,8 +49,8 @@ function TabNavigator() {
          }}
       />
       <Tab.Screen 
-        name="Other" 
-        component={LoginScreen} 
+        name="Purple" 
+        component={PurpleScreen} 
          options={{
            tabBarIcon: ({ color, size }) => (
              <Ionicons name="settings" color={color} size={size} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,55 +7,64 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
-  ActivityIndicator
-} from 'react-native';
+  ActivityIndicator,
+} from "react-native";
+import { useGuest } from "../context/GuestContext";
 import { useFoods } from "../hooks/useFoods";
 import AppLogoImage from "../components/AppLogoImage";
 import DropdownComponent from "../components/DropdownComponent";
-import { useFoodContext } from '../context/FoodContext';
+import { useFoodContext } from "../context/FoodContext";
 
 const FoodScreen = () => {
-  const [titleInput, setTitleInput] = useState('');
-  const [priceInput, setPriceInput] = useState('');
-  const [categoryInput, setCategoryInput] = useState('');
-  const { 
-    foods, 
-    currentFood, 
-    loading, 
-    error, 
-    loadAllFoods, 
-    getFood, 
-    addFood, 
-    updateFood, 
+  const { isGuest } = useGuest();
+  console.log("isGuest (Context):", isGuest); // Debería ser true si es invitado
+  const [titleInput, setTitleInput] = useState("");
+  const [priceInput, setPriceInput] = useState("");
+  const [categoryInput, setCategoryInput] = useState("");
+  const {
+    foods,
+    currentFood,
+    loading,
+    error,
+    loadAllFoods,
+    getFood,
+    addFood,
+    updateFood,
     deleteFood,
-    loadFoodsByCategory
+    loadFoodsByCategory,
   } = useFoodContext();
 
   useEffect(() => {
     loadAllFoods();
   }, []);
 
-  const handleSearch = async() => {
+  const handleSearch = async () => {
     if (titleInput.trim()) {
-      const formattedInput = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      const formattedInput = `${titleInput.trim()[0].toUpperCase()}${titleInput
+        .trim()
+        .slice(1)}`;
       await getFood(formattedInput);
     }
   };
 
   const handleAdd = async () => {
     if (titleInput.trim() && priceInput.trim() && categoryInput.trim()) {
-      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput
+        .trim()
+        .slice(1)}`;
       const formattedCategory = categoryInput.trim().toLowerCase();
       await addFood(formattedTitle, priceInput, formattedCategory);
       loadAllFoods();
-      setTitleInput('');
-      setPriceInput('');
+      setTitleInput("");
+      setPriceInput("");
     }
   };
 
   const handleUpdate = async () => {
     if (titleInput.trim() && priceInput.trim() && categoryInput.trim()) {
-      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput
+        .trim()
+        .slice(1)}`;
       const formattedCategory = categoryInput.trim().toLowerCase();
       await updateFood(formattedTitle, priceInput, formattedCategory);
       loadAllFoods();
@@ -65,12 +74,14 @@ const FoodScreen = () => {
 
   const handleDelete = async () => {
     if (titleInput.trim()) {
-      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
+      const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput
+        .trim()
+        .slice(1)}`;
       await deleteFood(formattedTitle);
       loadAllFoods();
       setCurrentFood(null);
-      setTitleInput('');
-      setPriceInput('');
+      setTitleInput("");
+      setPriceInput("");
     }
   };
 
@@ -82,11 +93,19 @@ const FoodScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ paddingTop: "15%", flex: 1, justifyContent: "center" }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ height: "80%" }}>
+    <SafeAreaView
+      style={{ paddingTop: "15%", flex: 1, justifyContent: "center" }}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ height: "80%" }}
+      >
         <View style={styles.container}>
           <AppLogoImage />
-          <DropdownComponent/>  
+          <View style={styles.paramcontainer}>
+            {isGuest && <Text style={styles.welcomeText}>Hola, Invitado</Text>}
+          </View>
+          <DropdownComponent />
           {error && <Text style={styles.errorText}>{error}</Text>}
           <TextInput
             style={styles.textInput}
@@ -110,9 +129,21 @@ const FoodScreen = () => {
           <View style={styles.buttonContainer}>
             <Button title="Buscar" onPress={handleSearch} disabled={loading} />
             <Button title="Añadir" onPress={handleAdd} disabled={loading} />
-            <Button title="Actualizar" onPress={handleUpdate} disabled={loading} />
-            <Button title="Eliminar" onPress={handleDelete} disabled={loading} />
-            <Button title="Cargar Todos" onPress={loadAllFoods} disabled={loading} />
+            <Button
+              title="Actualizar"
+              onPress={handleUpdate}
+              disabled={loading}
+            />
+            <Button
+              title="Eliminar"
+              onPress={handleDelete}
+              disabled={loading}
+            />
+            <Button
+              title="Cargar Todos"
+              onPress={loadAllFoods}
+              disabled={loading}
+            />
             <Button title="Load by category" onPress={handleLoadByCategory} />
           </View>
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
@@ -129,7 +160,6 @@ const FoodScreen = () => {
           ))}
         </View>
       </ScrollView>
-      
     </SafeAreaView>
   );
 };
@@ -150,15 +180,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "100%",
     marginVertical: 10,
     gap: 10,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginVertical: 8,
   },
   foodDetail: {
@@ -170,14 +200,25 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
   },
   foodItem: {
     fontSize: 16,
     marginBottom: 5,
-  }
+  },
+  paramcontainer: {
+    flex: 1,
+    padding: 1,
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
+    color: "red",
+  },
 });
 
 export default FoodScreen;
