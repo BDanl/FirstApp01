@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,20 +8,35 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import AppLogoImage from "../components/AppLogoImage";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { app } from "../firebaseConfig";
-/* import { useNavigation } from "@react-navigation/native"; */
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  /* const navigation = useNavigation(); */
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+      const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+        setKeyboardVisible(true);
+      });
+      const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+        setKeyboardVisible(false);
+      });
+  
+      return () => {
+        showSubscription.remove();
+        hideSubscription.remove();
+      };
+    }, []);
 
   const redirectLogin = () => {
     navigation.navigate("LoginScreen");
@@ -53,11 +68,14 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <View style={{ paddingTop: "25%", justifyContent: "center", flex:1}}>
-      <View style={styles.container}>
-        <AppLogoImage></AppLogoImage>
-        <Text style={styles.text}>Rise your Health</Text>
-      </View>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <View style={{ paddingTop: "25%", justifyContent: "center", flex:1}}>
+      {!isKeyboardVisible && (
+          <View style={styles.container}>
+            <AppLogoImage />
+            <Text style={styles.text}>Rise your Health</Text>
+          </View>
+        )}
 
       <View style={styles.container2}>
         <Text>Email:</Text>
@@ -112,6 +130,8 @@ export default function Register({ navigation }) {
         </TouchableOpacity>
       </View>
     </View>
+    </KeyboardAvoidingView>
+    
   );
 }
 

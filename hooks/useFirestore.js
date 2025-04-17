@@ -179,6 +179,8 @@ export const useFirestore = () => {
         objectid: collectionName,
       });
       
+      console.log(`Documento agregado con éxito. ID: ${docRef.id}`);
+
       setLoading(false);
       return docRef.id;
     } catch (err) {

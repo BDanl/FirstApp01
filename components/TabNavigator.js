@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TomatoScreen from "../screens/TomatoScreen";
 import WorkoutScreen from "../screens/WorkoutScreen";
 import OtherScreen from "../screens/OtherScreen";
+import LoginScreen from "../screens/LoginScreen";
 import FoodsScreen from "../screens/FoodsScreen";
 // Para iconos (opcional)
  import { Ionicons } from '@expo/vector-icons';
@@ -41,13 +42,13 @@ function TabNavigator() {
         component={TomatoScreen} 
          options={{
            tabBarIcon: ({ color, size }) => (
-             <Ionicons name="timer" color={color} size={size} />
+            <Ionicons name="person-circle-outline" color={color} size={size} />
            ),
          }}
       />
       <Tab.Screen 
         name="Other" 
-        component={OtherScreen} 
+        component={LoginScreen} 
          options={{
            tabBarIcon: ({ color, size }) => (
              <Ionicons name="settings" color={color} size={size} />

@@ -1,4 +1,4 @@
-// hooks/useFirestoreDocument.js
+/* // hooks/useFirestoreDocument.js
 import { useState } from 'react';
 import { collection, getDoc, getDocs, doc, query, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -105,4 +105,4 @@ export function useFirestoreDocument() {
   };
 
   return { document, loading, error, getData };
-}
+} */

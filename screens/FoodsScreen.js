@@ -45,7 +45,8 @@ const FoodScreen = () => {
   const handleAdd = async () => {
     if (titleInput.trim() && priceInput.trim() && categoryInput.trim()) {
       const formattedTitle = `${titleInput.trim()[0].toUpperCase()}${titleInput.trim().slice(1)}`;
-      await addFood(formattedTitle, priceInput, categoryInput);
+      const formattedCategory = categoryInput.trim().toLowerCase();
+      await addFood(formattedTitle, priceInput, formattedCategory);
       loadAllFoods();
       setTitleInput('');
       setPriceInput('');
